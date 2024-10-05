@@ -1,0 +1,266 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// build the data source slack clone
+model User {
+  id             String  @id @map("_id")
+  userId         String  @unique
+  username       String  @unique
+  email          String  @unique
+  passwordHash   String?
+  imageUrl       String?
+  bio            String?
+  dateOfBirth    String?
+  authentication Boolean @default(false)
+
+  workspaces Workspace[]
+  channels   Channel[]
+  members    Member[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Workspace {
+  id         String  @id @map("_id")
+  name       String?
+  imageUrl   String?
+  inviteCode String  @unique
+  step       Int     @default(1)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  members  Member[]
+  channels Channel[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+enum MemberRole {
+  OWNER
+  GUEST
+}
+
+model Member {
+  id       String     @id @map("_id")
+  name     String?
+  imageUrl String?
+  email    String     @unique
+  role     MemberRole @default(GUEST)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  messages       Message[]
+  reactions      Reaction[]
+  pins           Pin[]
+  files          File[]
+  directMessages DirectMessage[]
+
+  conversationsInitiated Conversation[] @relation("MemberOne")
+  conversationsReceived  Conversation[] @relation("MemberTwo")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  conversations Conversation[]
+
+  @@index([userId])
+  @@index([workspaceId])
+}
+
+enum ChannelType {
+  TEXT
+  MESSAGE
+}
+
+enum Status {
+  ACTIVE
+  UNACTIVE
+}
+
+model Channel {
+  id   String      @id @map("_id")
+  name String
+  type ChannelType @default(TEXT)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  messages Message[]
+  pins     Pin[]
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  pile      File[]
+  pipelines Pipeline[]
+
+  @@index([userId])
+  @@index([workspaceId])
+}
+
+model Pipeline {
+  id    String @id @map("_id")
+  name  String
+  order Int    @default(0)
+
+  channelId String?
+  channel   Channel? @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  lanes Lane[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([channelId])
+}
+
+model Lane {
+  id         String   @id @map("_id")
+  name       String
+  pipelineId String
+  pipeline   Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([pipelineId])
+}
+
+model Message {
+  id      String @id @map("_id")
+  content String @db.Text
+
+  fileUrl String?
+
+  memberId String
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  pinId String?
+  pin   Pin?    @relation(fields: [pinId], references: [id], onDelete: Cascade)
+
+  reactions Reaction[]
+
+  deleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([channelId])
+  @@index([memberId])
+}
+
+model Reaction {
+  id     String @id @map("_id")
+  emoji  String
+  status Status @default(ACTIVE)
+
+  memberId String
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  messageId String
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([memberId])
+  @@index([messageId])
+}
+
+model Pin {
+  id String @id @map("_id")
+
+  memberId String
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  messages Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([memberId])
+  @@index([channelId])
+}
+
+model File {
+  id   String @id @map("_id")
+  name String
+  url  String
+
+  memberId String
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Conversation {
+  id String @id @map("_id")
+
+  memberOneEmail String
+  memberOne      Member @relation("MemberOne", fields: [memberOneEmail], references: [email], onDelete: Cascade)
+
+  memberTwoEmail String
+  memberTwo      Member @relation("MemberTwo", fields: [memberTwoEmail], references: [email], onDelete: Cascade)
+
+  memberId String?
+  Member   Member? @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  directMessages DirectMessage[]
+
+  @@unique([memberOneEmail, memberTwoEmail])
+  @@index([memberOneEmail])
+  @@index([memberTwoEmail])
+}
+
+model DirectMessage {
+  id      String  @id @map("_id")
+  content String?
+  fileUrl String?
+
+  memberId String
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  deleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([memberId])
+  @@index([conversationId])
+}
