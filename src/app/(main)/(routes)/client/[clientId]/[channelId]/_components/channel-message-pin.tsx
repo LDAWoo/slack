@@ -2,11 +2,13 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMessageQuery } from "@/hooks/use-message-query";
+import { useMessageSocket } from "@/hooks/use-message-socket";
+import { setChannelNavigation } from "@/lib/shared/channel-navigation/channel-navigation-slice";
 import { Member, User } from "@prisma/client";
 import { Loader2, ServerCrash } from "lucide-react";
-import React from "react";
+import { useDispatch } from "react-redux";
 import ChannelMessagePinItem from "./channel-message-pin-item";
-import { useMessageSocket } from "@/hooks/use-message-socket";
+import { memo } from "react";
 
 interface ChannelMessagePin {
     user: User;
@@ -21,6 +23,7 @@ interface ChannelMessagePin {
 }
 
 const ChannelMessagePin = ({ user, member, channelId, apiUrl, socketUrl, socketQuery, paramValue, paramKey, type }: ChannelMessagePin) => {
+    const dispatch = useDispatch();
     const queryKey = `chat:${channelId}`;
     const addKey = `chat:${channelId}:messages`;
     const updateKey = `chat:${channelId}:messages:update`;
@@ -69,6 +72,17 @@ const ChannelMessagePin = ({ user, member, channelId, apiUrl, socketUrl, socketQ
         );
     }
 
+    const handleClick = (messageId: string) => {
+        dispatch(
+            setChannelNavigation({
+                tab: "Messages",
+                data: {
+                    messageId,
+                },
+            })
+        );
+    };
+
     return (
         <div>
             <div className="flex flex-col p-[16px_24px] gap-2 w-full">
@@ -78,7 +92,7 @@ const ChannelMessagePin = ({ user, member, channelId, apiUrl, socketUrl, socketQ
                 <ScrollArea>
                     <div className="w-full h-full flex flex-col gap-2">
                         {messagePins.map((message) => (
-                            <ChannelMessagePinItem key={message.id} id={message.id} socketUrl={socketUrl} socketQuery={socketQuery} user={user} currentMember={member} member={message.member} message={message} reactions={message.reactions} pin={message.pin} body={message.content} createdAt={message.createdAt} updatedAt={message.updatedAt} isUpdated={message.createdAt !== message.updatedAt} deleted={message.deleted} />
+                            <ChannelMessagePinItem key={message.id} id={message.id} socketUrl={socketUrl} socketQuery={socketQuery} user={user} currentMember={member} member={message.member} message={message} reactions={message.reactions} pin={message.pin} body={message.content} createdAt={message.createdAt} updatedAt={message.updatedAt} isUpdated={message.createdAt !== message.updatedAt} deleted={message.deleted} onClick={handleClick} />
                         ))}
                     </div>
                 </ScrollArea>
@@ -87,4 +101,4 @@ const ChannelMessagePin = ({ user, member, channelId, apiUrl, socketUrl, socketQ
     );
 };
 
-export default ChannelMessagePin;
+export default memo(ChannelMessagePin);

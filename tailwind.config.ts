@@ -12,6 +12,7 @@ const config: Config = {
                 "foreground-slack-secondary": "hsl(var(--foreground-slack-secondary))",
                 "background-slack-active": "hsl(var(--background-slack-active))",
                 "background-slack-button-active": "hsl(var(--background-slack-button-active))",
+                link: "hsl(var(--link))",
                 background: "hsl(var(--background))",
                 foreground: "hsl(var(--foreground))",
                 card: {

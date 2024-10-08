@@ -1,6 +1,8 @@
 "use client";
 
+import { RootState } from "@/lib/shared/store";
 import { createContext, useContext, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { io as ClientIO, Socket } from "socket.io-client";
 
 type SocketContextType = {
@@ -25,11 +27,15 @@ export const useSocket = () => {
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
     const [isConnected, setIsConnected] = useState(false);
+    const { workspace } = useSelector((state: RootState) => state.workspace);
+    const { member } = useSelector((state: RootState) => state.member);
 
     useEffect(() => {
+        if (!workspace || !member) return;
         const socketInstance = ClientIO(process.env.NEXT_PUBLIC_SITE_URL!, {
             path: "/api/socket/io",
             addTrailingSlash: false,
+            query: { workspaceId: workspace.id, memberId: member.id },
         });
 
         socketInstance.on("connect", () => {
@@ -44,7 +50,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         return () => {
             socketInstance.disconnect();
         };
-    }, []);
+    }, [workspace, member]);
 
     return <SocketContext.Provider value={{ socket, isConnected }}>{children}</SocketContext.Provider>;
 };

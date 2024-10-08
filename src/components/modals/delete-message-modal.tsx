@@ -1,4 +1,5 @@
 "use client";
+import dynamic from "next/dynamic";
 import axios from "axios";
 import { FileIcon } from "lucide-react";
 import Image from "next/image";
@@ -9,7 +10,7 @@ import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { useModal } from "@/providers/modal-provider";
 import { formatMessageDate } from "@/lib/date";
-import Renderer from "../global/renderer";
+const Renderer = dynamic(import ("../global/renderer"));
 const DeleteMessageModal = () => {
     const { isOpen, type, data, onClose } = useModal();
     const [isLoading, setIsLoading] = useState(false);

@@ -10,22 +10,23 @@ import { EllipsisVertical } from "lucide-react";
 import { useSelector } from "react-redux";
 
 const ChannelHeader = () => {
+    const { user } = useSelector((state: RootState) => state.user);
     const { channel } = useSelector((state: RootState) => state.channel);
     const { member } = useSelector((state: RootState) => state.member);
-    const { conversations } = useSelector((state: RootState) => state.conversations);
+    const { workspace } = useSelector((state: RootState) => state.workspace);
     const { onOpen } = useModal();
 
-    if (!channel || !member || !conversations) {
+    if (!channel || !member || !workspace) {
         return null;
     }
 
-    console.log(conversations);
-
     const handleOpenChannelModal = () => {
         onOpen("channelModal", {
+            apiUrl: "/api/members",
+            workspace,
             channel,
-            conversations,
             member,
+            user,
         });
     };
 
@@ -52,9 +53,9 @@ const ChannelHeader = () => {
                             <div className="text-[13px] font-bold text-background">View all members of this channel</div>
                             <div>
                                 <div className="text-[13px] font-bold text-background/75 break-words">Includes</div>
-                                {conversations.map((conversation) => (
-                                    <div key={conversation.id} className="text-[13px] font-bold text-background/70 break-words">
-                                        {conversation.memberTwo.user.username?.split("@")[0]}
+                                {workspace.members.map((member) => (
+                                    <div key={member.id} className="text-[13px] font-bold text-background/70 break-words">
+                                        {member.user.username?.split("@")[0]}
                                     </div>
                                 ))}
                             </div>
@@ -63,9 +64,9 @@ const ChannelHeader = () => {
                     className="p-[8px_12px_10px] w-[150px]"
                 >
                     <button onClick={handleOpenChannelModal} className="flex flex-row items-center p-[3px] border border-border rounded-[8px] bg-background hover:opacity-70">
-                        {conversations.map((conversation, index) => (
+                        {workspace.members.map((member, index) => (
                             <div
-                                key={conversation.id}
+                                key={member.id}
                                 className="relative h-[20px]"
                                 style={{
                                     zIndex: 5 - index,
@@ -77,11 +78,11 @@ const ChannelHeader = () => {
                                         marginRight: `-${0 - index + 5}px`,
                                     }}
                                 >
-                                    <UserAvatar src={conversation.memberTwo.user.imageUrl} className="w-5 h-5 rounded-[6px]" />
+                                    <UserAvatar src={member.user.imageUrl} className="w-5 h-5 rounded-[6px]" />
                                 </div>
                             </div>
                         ))}
-                        <span className="leading-[22px] pr-[6px] pl-3 text-[13px] font-bold">{conversations.length + 1}</span>
+                        <span className="leading-[22px] pr-[6px] pl-3 text-[13px] font-bold">{workspace.members.length}</span>
                     </button>
                 </Hint>
 

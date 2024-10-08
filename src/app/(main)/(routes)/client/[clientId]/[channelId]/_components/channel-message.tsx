@@ -3,7 +3,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMessageQuery } from "@/hooks/use-message-query";
 import { useMessageSocket } from "@/hooks/use-message-socket";
 import { useMessageScroll } from "@/hooks/use-message.scroll";
-import { MessageWithMemberWithUser } from "@/lib/types";
 import { Member, Message, User } from "@prisma/client";
 import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
 import { Loader2, ServerCrash } from "lucide-react";
@@ -111,7 +110,7 @@ const ChannelMessage = ({ user, member, channelId, apiUrl, socketUrl, socketQuer
                                         <hr className="absolute top-1/2 left-0 right-0 border-t border-border" />
                                         <span className="relative inline-block bg-background px-4 py-1 rounded-full text-[13px] border font-bold border-border shadow-sm">{formatDateLabel(dateKey)}</span>
                                     </div>
-                                    {messages.map((message: MessageWithMemberWithUser, index) => {
+                                    {messages.map((message, index) => {
                                         const prevMessage = messages[index - 1];
                                         const isCompact = prevMessage && prevMessage.member.user.id === message.member.user.id && differenceInMinutes(new Date(message.createdAt), new Date(prevMessage.createdAt)) < TIME_THRESHOLD;
 

@@ -13,7 +13,7 @@ import qs from "query-string";
 import { TiPin } from "react-icons/ti";
 import MessageAction from "./channel-message-action";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import Editor from "@/components/ui/editor";
 import Quill from "quill";
 import { useModal } from "@/providers/modal-provider";
@@ -91,7 +91,7 @@ const ChannelMessageItem = ({ id, socketUrl, socketQuery, user, message, reactio
             if (isOwner || existingEmoji) {
                 await axios.delete(url);
             } else {
-                await axios.patch(url, { emoji });
+                await axios.post(url, { emoji });
             }
             router.refresh();
         } catch (error) {
@@ -170,15 +170,71 @@ const ChannelMessageItem = ({ id, socketUrl, socketQuery, user, message, reactio
                 className={cn("flex flex-col gap-2 p-1 px-5 hover:bg-gray-100/60 group relative", {
                     "bg-[#FEF9EC] hover:bg-[#FEF9EC]": exitingPin || isEditing,
                 })}
+                id={`message-${id}`}
             >
                 <div className="flex items-start gap-2">
                     <Hint content={formatFullTime(createdAt)}>
                         <button className="text-[12px] text-[#616061] min-w-9 opacity-0 group-hover:opacity-100 leading-[22px] hover:underline">{format(new Date(createdAt), "hh:mm")}</button>
                     </Hint>
                     {!isEditing && (
-                        <div className="flex flex-row w-full items-center mb-1">
-                            <Renderer body={body} />
-                            {isUpdated && !deleted && <span className="translate-y-[1px] text-[13px] mx-2 text-[#868686]">(edited)</span>}
+                        <div className="flex flex-col">
+                            <div className="flex flex-row w-full items-center mb-1">
+                                <Renderer body={body} />
+                                {isUpdated && !deleted && <span className="translate-y-[1px] text-[13px] mx-2 text-[#868686]">(edited)</span>}
+                            </div>
+                            {reactions && reactions.length > 0 && (
+                                <div className="mb-1 flex flex-wrap mt-1">
+                                    {Object.values(groupedReactions(reactions)).map(({ count, users, reaction }) => {
+                                        const isOwner = users.some((u: User) => u.id === user.id);
+
+                                        return (
+                                            <div key={reaction.id} className="mb-1">
+                                                <Hint
+                                                    isPortal
+                                                    sideOffset={10}
+                                                    content={() => (
+                                                        <div className="flex flex-col w-[200px] gap-2 items-center">
+                                                            <div className="h-[64px] w-[64px] bg-background rounded-[10px] flex items-center justify-center">
+                                                                <div className="relative h-8 w-8 rounded-[10px]">
+                                                                    <Image src={reaction.emoji} alt="emoji" fill className="inset-0 object-cover overflow-hidden" />
+                                                                </div>
+                                                            </div>
+                                                            <span className="text-[13px]">{isOwner ? "You (click to delete)" : `${users[0].username} reacted`}</span>
+                                                        </div>
+                                                    )}
+                                                >
+                                                    <Button
+                                                        onClick={() => handleReaction(reaction.emoji, reaction.id, isOwner)}
+                                                        className={cn("text-[#1263a3] p-[0_8px] gap-1 items-center w-fit mb-1 ml-1 mr-1 duration-0 rounded-full h-6 bg-[#e3f8ff] hover:bg-[#e3f8ff] text-[12px] font-medium leading-[22px] shadow-[0_0_0_1px_#1264a3]", {
+                                                            "bg-[#1d1c1d0f] shadow-none hover:shadow-[0_0_0_1px_#000] hover:bg-background text-muted-foreground": !isOwner,
+                                                        })}
+                                                    >
+                                                        <div className="relative h-4 w-4">
+                                                            <Image src={reaction.emoji} alt="emoji" fill className="object-cover" />
+                                                        </div>
+                                                        <span>{count}</span>
+                                                    </Button>
+                                                </Hint>
+                                            </div>
+                                        );
+                                    })}
+
+                                    <Hint content={"Add a reaction"} isPortal sideOffset={10}>
+                                        <EmojiPicker
+                                            emojiComponent={() => (
+                                                <Button className={cn("p-[0_8px] gap-1 items-center w-fit mb-1 ml-1 mr-1 duration-0 rounded-full h-6 bg-[#1d1c1d0f] shadow-none hover:shadow-[0_0_0_1px_#000] hover:bg-background text-muted-foreground")}>
+                                                    <EmojiPlus size={18} />
+                                                </Button>
+                                            )}
+                                            side="right"
+                                            onChange={(emoji: any) => {
+                                                const url = `https://cdn.jsdelivr.net/npm/emoji-datasource-google/img/google/64/${emoji.unified}.png`;
+                                                handleReaction(url);
+                                            }}
+                                        />
+                                    </Hint>
+                                </div>
+                            )}
                         </div>
                     )}
                     {isEditing && (
@@ -197,6 +253,7 @@ const ChannelMessageItem = ({ id, socketUrl, socketQuery, user, message, reactio
             className={cn("flex flex-row pt-1.5 px-5 hover:bg-gray-100/60 group relative", {
                 "bg-[#FEF9EC] hover:bg-[#FEF9EC]": exitingPin || isEditing,
             })}
+            id={`message-${id}`}
         >
             <div className="flex flex-col w-full">
                 {exitingPin && (
@@ -295,4 +352,4 @@ const ChannelMessageItem = ({ id, socketUrl, socketQuery, user, message, reactio
     );
 };
 
-export default ChannelMessageItem;
+export default memo(ChannelMessageItem);

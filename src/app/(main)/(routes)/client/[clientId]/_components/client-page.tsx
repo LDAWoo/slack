@@ -1,18 +1,18 @@
 "use client";
 
+import { setConversations } from "@/lib/shared/conversations/conversations-slice";
 import { setUser } from "@/lib/shared/user/user-slice";
 import { setWorkspace } from "@/lib/shared/workspaces/workspace-slice";
 import { WorkspaceWithChannelAndMember } from "@/lib/types";
 import { Conversation, User } from "@prisma/client";
+import { redirect } from "next/navigation";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import StepPageOne from "./step-page-one";
-import StepPageTwo from "./step-page-two";
-import StepPageThree from "./step-page-three";
-import StepPageFour from "./step-page-four";
 import StepPageFive from "./step-page-five";
-import { setConversations } from "@/lib/shared/conversations/conversations-slice";
-import { redirect } from "next/navigation";
+import StepPageFour from "./step-page-four";
+import StepPageOne from "./step-page-one";
+import StepPageThree from "./step-page-three";
+import StepPageTwo from "./step-page-two";
 
 type ClientPageProps = WorkspaceWithChannelAndMember & {
     user: User;
@@ -38,7 +38,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ user, workspace, conversations 
         return redirect("/");
     }
 
-    const channel = workspace.channels[2]; // channel name is current create channel
+    const channel = workspace.channels[2];
 
     const step = workspace?.step;
 

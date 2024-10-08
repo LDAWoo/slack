@@ -83,7 +83,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
             return res.status(404).json({ error: "Message not found" });
         }
 
-        let pipeline = await db.pipeline.findFirst({
+        const pipeline = await db.pipeline.findFirst({
             where: {
                 name: "Pins",
                 channelId: channel.id as string,
@@ -169,24 +169,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
                     },
                 },
             });
-
-            if (!pipeline) {
-                pipeline = await db.pipeline.create({
+        }
+        if (!pipeline) {
+            await db.$transaction(async (prisma) => {
+                await prisma.pipeline.create({
                     data: {
                         channelId: channelId as string,
                         id: nanoid(11),
                         name: "Pins",
-                        order: channel.pipelines.length,
+                        order: 3,
                     },
                 });
-            }
+            });
         }
+
+        const pipelines = await db.pipeline.findMany({
+            where: {
+                channelId: channelId as string,
+            },
+        });
 
         const updatekey = `chat:${channelId}:messages:update`;
         const updatePipeLineKey = `pipeline:${channelId}:update`;
 
         res?.socket?.server?.io?.emit(updatekey, message);
-        res?.socket?.server?.io?.emit(updatePipeLineKey, pipeline);
+        res?.socket?.server?.io?.emit(updatePipeLineKey, pipelines);
 
         return res.status(200).json(message);
     } catch (error) {

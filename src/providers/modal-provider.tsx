@@ -2,10 +2,11 @@
 
 import ChannelModal from "@/components/modals/channel-modal";
 import DeleteMessageModal from "@/components/modals/delete-message-modal";
+import StatusUserModal from "@/components/modals/status-user-modal";
 import { Channel, ChannelType, Member, Message, User, Workspace } from "@prisma/client";
 import React, { createContext, useState, ReactNode } from "react";
 
-export type ModalType = "channelModal" | "deleteMessage";
+export type ModalType = "channelModal" | "deleteMessage" | "statusUser";
 
 interface ModalData {
     workspace?: Workspace;
@@ -51,6 +52,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
             {children}
             <DeleteMessageModal />
             <ChannelModal />
+            <StatusUserModal />
         </ModalContext.Provider>
     );
 };

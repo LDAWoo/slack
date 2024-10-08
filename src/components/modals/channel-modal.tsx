@@ -1,31 +1,51 @@
 "use client";
+import { useMemberQuery } from "@/hooks/use-member-query";
+import { setProfile } from "@/lib/shared/profile/profile-slice";
+import { MemberWithUser } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useModal } from "@/providers/modal-provider";
+import { User } from "@prisma/client";
 import axios from "axios";
 import { Check, ChevronDown } from "lucide-react";
+import { useParams } from "next/navigation";
 import qs from "query-string";
-import React, { useState } from "react";
+import { useState } from "react";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { PiStar, PiStarFill } from "react-icons/pi";
-import { PrefixIcon } from "../icons";
+import { useDispatch } from "react-redux";
+import UserAvatar from "../global/user-avatar";
+import { PrefixIcon, UserPlusIcon } from "../icons";
 import { Button } from "../ui/button";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "../ui/command";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import Hint from "../ui/hint";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { TooltipProvider } from "../ui/tooltip";
+import ChannelAction from "./components/channel/channel-action";
+import ChannelTabs from "./components/channel/channel-tabs";
+
 const ChannelModal = () => {
+    const dispatch = useDispatch();
     const { isOpen, type, data, onClose } = useModal();
+    const params = useParams();
+    const { channelId } = params as {};
+    const { members } = useMemberQuery();
+
     const [isLoading, setIsLoading] = useState(false);
 
-    const { apiUrl, query, member, channel, conversations } = data;
+    const { query, user, channel, member } = data;
+
     const isModalOpen = isOpen && data && type === "channelModal";
+
+    if (!isModalOpen) {
+        return null;
+    }
+
+    console.log(members);
 
     const onDelete = async () => {
         try {
             const url = qs.stringifyUrl({
-                url: apiUrl || "",
+                url: "/api/members",
                 query,
             });
             setIsLoading(true);
@@ -38,14 +58,21 @@ const ChannelModal = () => {
         }
     };
 
+    const handleShowProfile = (user: User) => {
+        dispatch(setProfile(user));
+        onClose();
+    };
+
     const isFavorite = true;
     const selectedMember = "all";
 
-    console.log(member);
+    const isOwner = member?.role === "OWNER";
+
+    if (!members) return;
 
     return (
         <Dialog open={isModalOpen} onOpenChange={onClose}>
-            <DialogContent className="w-[520px] bg-background gap-0 shadow-[0_2px_10px_0_hsl(0_calc(1_*_0%)_0%_/_0.2)] p-0 overflow-hidden border-0 !rounded-[6px]">
+            <DialogContent className="w-[580px] max-w-[580px] bg-background gap-0 shadow-[0_2px_10px_0_hsl(0_calc(1_*_0%)_0%_/_0.2)] p-0 overflow-hidden border-0 !rounded-[6px]">
                 <DialogHeader className="p-[20px_28px_0_28px]">
                     <DialogTitle className="text-xl text-left font-extrabold mr-[32px]">
                         <div className="flex items-center gap-1">
@@ -105,7 +132,7 @@ const ChannelModal = () => {
                             </TabsTrigger>
 
                             <TabsTrigger value="members" className="mr-5 ml-[8px] cursor-pointer flex items-center font-bold w-fit !text-foreground relative gap-1 p-0 h-[36px] shadow-none rounded-none [&[data-state=active]>#member-line]:block">
-                                <span className="text-[13px]">Members</span>
+                                <span className="text-[13px]">Members {members.length}</span>
                                 <span className={cn("absolute -bottom-[1px] left-0 bg-background-slack w-full h-[2px] hidden")} id="member-line" />
                             </TabsTrigger>
 
@@ -132,7 +159,7 @@ const ChannelModal = () => {
                                                 <ChevronDown size={16} />
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="w-[322px] p-[12px_0] rounded-[8px] border-border bg-secondary" side="bottom" align="end" sideOffset={-2} alignOffset={-6}>
+                                        <DropdownMenuContent className="w-[322px] p-[12px_0] rounded-[8px] border-border bg-accent" side="bottom" align="end" sideOffset={-2} alignOffset={-6}>
                                             <DropdownMenuItem className="relative p-[0_24px] w-full h-[28px] group hover:!bg-background-slack-button-active items-center rounded-none cursor-pointer m-0">
                                                 <div
                                                     className={cn("flex w-full items-center justify-between gap-[8px] text-foreground  group-hover:!text-white", {
@@ -197,11 +224,47 @@ const ChannelModal = () => {
                                     </DropdownMenu>
                                 </div>
 
-                                <CommandList className="p-[0_16px]">
+                                <CommandList className="p-0">
                                     <CommandEmpty>No results found.</CommandEmpty>
-                                    <CommandItem>123</CommandItem>
+                                    <CommandItem className="p-[12px_28px] !bg-background hover:!bg-accent cursor-pointer">
+                                        <Button className="h-9 w-9 p-0 bg-[#E0EDF2] hover:bg-[#E0EDF2] text-background-slack-button-active mr-3">
+                                            <UserPlusIcon size={20} />
+                                        </Button>
+                                        <span className="text-[15px] font-bold">Add people</span>
+                                    </CommandItem>
+                                    {members.map((member: MemberWithUser) => {
+                                        const isMember = member.role === "GUEST";
+                                        const isYourUser = member.user.id === user.id;
+                                        return (
+                                            <CommandItem key={member.id} className="p-0">
+                                                <button onClick={() => handleShowProfile(member.user)} className="w-full flex items-center relative group p-[12px_28px] !bg-background hover:!bg-accent cursor-pointer">
+                                                    <div className="h-9 w-9 p-0 bg-[#E0EDF2] hover:bg-[#E0EDF2] text-background-slack-button-active mr-3">
+                                                        <UserAvatar src={member.user.imageUrl as string} className="w-full h-full rounded-md" />
+                                                    </div>
+                                                    <span className="text-[15px] font-bold flex-1 whitespace-nowrap mr-1">{`${member.user.username?.split("@")[0]} ${isYourUser ? "(you)" : ""} `}</span>
+                                                    <div
+                                                        className={cn("flex flex-row items-center justify-between flex-grow-[4]", {
+                                                            "flex-grow-[5]": isOwner,
+                                                        })}
+                                                    >
+                                                        <span
+                                                            className={cn("w-[9px] h-[9px] border-2 border-foreground/50 rounded-full overflow-hidden bg-transparent", {
+                                                                "bg-[#20A271]  border-none": member.user.isOnline,
+                                                            })}
+                                                        />
+                                                        {member.role === "OWNER" && <span className="text-[13px] p-[4px_6px] rounded-full bg-accent">Channel Manager</span>}
+                                                    </div>
+                                                    {isOwner && <ChannelAction canDeletedMember={isMember} canDeleteMemberManager={isOwner && !isMember} canAssignChannelManager={isMember} />}
+                                                </button>
+                                            </CommandItem>
+                                        );
+                                    })}
                                 </CommandList>
                             </Command>
+                        </TabsContent>
+
+                        <TabsContent value="tabs" className="p-0 mt-0">
+                            <ChannelTabs channelId={channelId} />
                         </TabsContent>
                     </Tabs>
                 </div>

@@ -92,7 +92,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
         }
 
         const updatePipeLineKey = `pipeline:${channelId}:update`;
+
         res?.socket?.server?.io?.emit(updatePipeLineKey, updatePipelines);
+
         return res.status(200).json(updatePipelines);
     } catch (error) {
         console.log("[PIPELINES]", error);

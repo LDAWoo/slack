@@ -21,14 +21,10 @@ export const usePipelineSocket = ({ addKey, updateKey, queryKey }: PipelineSocke
             return;
         }
 
-        socket.on(updateKey, (updatedPipeline: PipelineProps) => {
+        socket.on(updateKey, (updatedPipeline: PipelineProps | PipelineProps[]) => {
             queryClient.setQueryData([queryKey], (oldData: any) => {
-                if (!oldData) return;
-
-                return {
-                    ...oldData,
-                    pipelines: oldData.pipelines.map((pipeline: PipelineProps) => (pipeline.id === updatedPipeline.id ? updatedPipeline : pipeline)),
-                };
+                if (!updatedPipeline) return;
+                return updatedPipeline;
             });
         });
 

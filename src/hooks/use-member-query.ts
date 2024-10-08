@@ -1,19 +1,20 @@
 "use client";
-import qs from "query-string";
 import { useSocket } from "@/providers/socket-provider";
+import qs from "query-string";
 import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 
-interface PipeLineQueryProps {
-    queryKey: string;
-    apiUrl: string;
-    paramKey: "channelId";
-    paramValue: string;
-}
-
-export const usePipelineQuery = ({ queryKey, apiUrl, paramKey, paramValue }: PipeLineQueryProps) => {
+export const useMemberQuery = () => {
+    const params = useParams();
     const { isConnected } = useSocket();
+    const { clientId } = params || {};
 
-    const fetchPipeLine = async () => {
+    const apiUrl = "/api/members";
+    const queryKey = `member:${clientId}`;
+    const paramKey = "workspaceId";
+    const paramValue = clientId;
+
+    const fetchMembers = async () => {
         const url = qs.stringifyUrl(
             {
                 url: apiUrl,
@@ -31,12 +32,12 @@ export const usePipelineQuery = ({ queryKey, apiUrl, paramKey, paramValue }: Pip
 
     const { data, error, status } = useQuery({
         queryKey: [queryKey],
-        queryFn: fetchPipeLine,
+        queryFn: fetchMembers,
         refetchInterval: isConnected ? false : 1000,
     });
 
     return {
-        pipelines: data ?? [],
+        members: data,
         status,
         error,
     };

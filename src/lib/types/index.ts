@@ -16,7 +16,7 @@ export type WorkspaceWithChannelAndMember = {
 export type NextApiResponseServerIo = NextApiResponse & {
     socket: Socket & {
         server: NetServer & {
-            io: SocketIOServer;
+            io?: SocketIOServer;
         };
     };
 };
@@ -39,4 +39,8 @@ export type ReactionWithMemberWithUser = Reaction & {
     member: Member & {
         user: User;
     };
+};
+
+export type MemberWithUser = Member & {
+    user: User;
 };

@@ -32,13 +32,14 @@ type ChannelMessagePinItemProps = {
     updatedAt: string;
     socketUrl: string;
     socketQuery: Record<string, string>;
+    onClick: (messageId: string) => void;
 };
 
 const formatFullTime = (date: string) => {
     return `${isToday(date) ? "Today" : isYesterday(date) ? "Yesterday" : format(new Date(date), "MMM d, yyyy")} at ${format(new Date(date), "h:mm:ss a")}`;
 };
 
-const ChannelMessagePinItem = ({ id, user, message, reactions, pin, member, currentMember, body, isCompact, isUpdated, deleted, createdAt, updatedAt, socketUrl, socketQuery }: ChannelMessagePinItemProps) => {
+const ChannelMessagePinItem = ({ id, user, message, reactions, pin, member, currentMember, body, isCompact, isUpdated, deleted, createdAt, updatedAt, socketUrl, socketQuery, onClick }: ChannelMessagePinItemProps) => {
     const router = useRouter();
 
     const handleReaction = async (emoji: string, reactionId?: string, isOwner?: boolean) => {
@@ -88,7 +89,7 @@ const ChannelMessagePinItem = ({ id, user, message, reactions, pin, member, curr
     };
 
     return (
-        <div className="flex flex-row gap-2 p-3 border border-border rounded-md bg-background">
+        <div className="flex flex-row gap-2 p-3 border border-border rounded-md bg-background cursor-pointer" onClick={() => onClick(id)}>
             <div className="flex items-start gap-2">
                 <button>
                     <UserAvatar src={member.user.imageUrl as string} className="rounded-lg" />

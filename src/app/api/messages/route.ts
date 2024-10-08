@@ -44,6 +44,15 @@ export async function GET(req: Request) {
                             user: true,
                         },
                     },
+                    pin: {
+                        include: {
+                            member: {
+                                include: {
+                                    user: true,
+                                },
+                            },
+                        },
+                    },
                     reactions: {
                         include: {
                             member: {
@@ -54,15 +63,6 @@ export async function GET(req: Request) {
                         },
                         orderBy: {
                             createdAt: "asc",
-                        },
-                    },
-                    pin: {
-                        include: {
-                            member: {
-                                include: {
-                                    user: true,
-                                },
-                            },
                         },
                     },
                 },
@@ -82,6 +82,15 @@ export async function GET(req: Request) {
                             user: true,
                         },
                     },
+                    pin: {
+                        include: {
+                            member: {
+                                include: {
+                                    user: true,
+                                },
+                            },
+                        },
+                    },
                     reactions: {
                         include: {
                             member: {
@@ -92,15 +101,6 @@ export async function GET(req: Request) {
                         },
                         orderBy: {
                             createdAt: "asc",
-                        },
-                    },
-                    pin: {
-                        include: {
-                            member: {
-                                include: {
-                                    user: true,
-                                },
-                            },
                         },
                     },
                 },

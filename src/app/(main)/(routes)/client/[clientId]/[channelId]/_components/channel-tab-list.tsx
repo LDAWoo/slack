@@ -8,15 +8,15 @@ import qs from "query-string";
 import { useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import ChannelTabItem from "./channel-tab-item";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/shared/store";
 
 interface IChannelTabList {
-    channelId?: string; // Optional to accommodate default value
-    tab?: string; // Optional to accommodate default value
-    onTabClick?: (tab: string) => void; // Optional to accommodate default value
+    channelId?: string;
 }
 
 // ChannelTabList component
-const ChannelTabList = ({ channelId = "", tab = "", onTabClick = () => {} }: IChannelTabList) => {
+const ChannelTabList = ({ channelId = "" }: IChannelTabList) => {
     const router = useRouter();
     const apiUrl = `/api/pipelines`;
     const paramKey = "channelId";
@@ -38,8 +38,9 @@ const ChannelTabList = ({ channelId = "", tab = "", onTabClick = () => {} }: ICh
         addKey,
         updateKey,
     });
+    const { tab } = useSelector((state: RootState) => state.channelNavigation);
 
-    const [pipelineList, setPipelineList] = useState<Pipeline[]>(pipelines || []);
+    const [pipelineList, setPipelineList] = useState<Pipeline[]>(pipelines);
 
     useEffect(() => {
         if (pipelines) {
@@ -66,16 +67,12 @@ const ChannelTabList = ({ channelId = "", tab = "", onTabClick = () => {} }: ICh
         const [movedPipeline] = newPipelines.splice(source.index, 1);
         newPipelines.splice(destination.index, 0, movedPipeline);
 
-        // Update the order field in the pipelines
         const reorderedPipelines = newPipelines.map((pipeline, index) => ({
             ...pipeline,
             order: index,
         }));
 
-        // Update local state
         setPipelineList(reorderedPipelines);
-
-        // Update server with new order
         handleUpdatePipelineOrder(reorderedPipelines);
     };
 
@@ -106,7 +103,7 @@ const ChannelTabList = ({ channelId = "", tab = "", onTabClick = () => {} }: ICh
                             <Draggable key={pipeline.id} draggableId={pipeline.id} index={index}>
                                 {(provided, snapshot) => (
                                     <div {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef} className="!ml-0">
-                                        <ChannelTabItem pipeline={pipeline} isActive={pipeline.name === tab} onClick={onTabClick} isDragging={snapshot.isDragging} />
+                                        <ChannelTabItem pipeline={pipeline} isActive={pipeline.name === tab} isDragging={snapshot.isDragging} />
                                     </div>
                                 )}
                             </Draggable>

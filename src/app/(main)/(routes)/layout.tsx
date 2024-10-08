@@ -27,8 +27,8 @@ const Layout = ({ children }: Props) => {
         return {};
     };
     return (
-        <SocketProvider>
-            <Provider store={store}>
+        <Provider store={store}>
+            <SocketProvider>
                 <QueryProvider>
                     <TooltipProvider>
                         <ModalProvider>
@@ -53,8 +53,8 @@ const Layout = ({ children }: Props) => {
                         </ModalProvider>
                     </TooltipProvider>
                 </QueryProvider>
-            </Provider>
-        </SocketProvider>
+            </SocketProvider>
+        </Provider>
     );
 };
 

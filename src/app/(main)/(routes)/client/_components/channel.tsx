@@ -33,7 +33,7 @@ const Channel = () => {
 
     const getChannelClassNames = (id: string) =>
         cn("relative cursor-pointer h-[28px] whitespace-nowrap overflow-hidden text-ellipsis rounded-[6px] p-[0_10px_0_16px] hover:bg-background-slack-active text-foreground-slack-secondary", {
-            "bg-[rgba(249,237,255,1)] text-foreground-slack [] hover:bg-[rgba(249,237,255,1)]": id === channelId,
+            "bg-[rgba(249,237,255,1)] text-foreground-slack hover:bg-[rgba(249,237,255,1)]": id === channelId,
         });
 
     return (

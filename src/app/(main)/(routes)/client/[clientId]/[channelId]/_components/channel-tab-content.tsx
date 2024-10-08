@@ -1,20 +1,22 @@
 "use client";
-import React from "react";
+import { RootState } from "@/lib/shared/store";
+import { Channel, Member, Pipeline, User } from "@prisma/client";
 import dynamic from "next/dynamic";
+import React from "react";
+import { useSelector } from "react-redux";
 
 const ChannelInput = dynamic(() => import("./channel-input"), { ssr: false });
 const ChannelMessage = dynamic(() => import("./channel-message"), { ssr: false });
 const ChannelMessagePin = dynamic(() => import("./channel-message-pin"), { ssr: false });
-import { Channel, Member, Pipeline, User } from "@prisma/client";
 
 interface IChannelTabContent {
-    tab: string;
     user: User;
     member: Member;
     channel: Channel & { pipelines: Pipeline[] };
+    tab: string;
 }
 
-const ChannelTabContent = React.memo(({ tab, user, member, channel }: IChannelTabContent) => {
+const ChannelTabContent = React.memo(({ user, member, channel, tab }: IChannelTabContent) => {
     const renderContent = () => {
         switch (tab) {
             case "Messages":

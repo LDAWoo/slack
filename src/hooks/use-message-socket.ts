@@ -35,7 +35,7 @@ export const useMessageSocket = ({ addKey, updateKey, queryKey }: MessageSocketP
                         ...page,
                         messages: page.messages.map((m: MessageWithMemberWithUser) => {
                             if (m.id === message.id) {
-                                return m;
+                                return message;
                             }
 
                             return m;

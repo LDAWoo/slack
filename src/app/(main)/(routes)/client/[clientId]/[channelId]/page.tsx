@@ -27,7 +27,11 @@ const ChannelId = async ({ params }: IChannelId) => {
         },
         include: {
             channels: true,
-            members: true,
+            members: {
+                include: {
+                    user: true,
+                },
+            },
         },
     });
 

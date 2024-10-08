@@ -17,11 +17,24 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
         const io = new ServerIO(httpServer, {
             path: path,
             addTrailingSlash: false,
+            cors: {
+                origin: "*",
+            },
         });
         res.socket.server.io = io;
 
         io.on("connection", (socket) => {
-            console.log("New socket connection:", socket.id);
+            console.log(`User connected: ${socket.id}`);
+
+            socket.on("disconnect", () => {
+                const memberId = socket.handshake.query.memberId;
+                const workspaceId = socket.handshake.query.workspaceId;
+
+                console.log(`User disconnected: ${memberId}`);
+
+                socket.leave(workspaceId as string);
+                socket.broadcast.emit("member-disconnected", { workspaceId, memberId });
+            });
         });
     } else {
         console.log("Socket.IO server already initialized");
