@@ -1,0 +1,640 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+    height: 100vh;
+    font-family: "Lato", sans-serif !important;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+.shadow-focus-border {
+    --saf-0: rgba(var(--sk_highlight, 18, 100, 163), 1);
+    box-shadow: 0 0 0 1px var(--sk_focused-shadow-color, var(--saf-0)), 0 0 0 5px color-mix(in srgb, var(--sk_focused-shadow-color, #1d9bd1) 30%, transparent);
+}
+
+.scrollbarCustom::-webkit-scrollbar {
+    width: 8px;
+    height: 6px;
+    background: transparent;
+}
+
+.scrollbarCustom::-webkit-scrollbar-thumb {
+    background: #898989;
+    -webkit-border-radius: 8px;
+}
+
+.scrollbarCustom::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollbarCustom::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+@layer base {
+    :root {
+        --quip-user-text-secondary: 128, 128, 128;
+        --editor-document-text-color: rgb(51, 51, 51);
+        --editor-document-text-secondary-color: rgb(var(--quip-user-text-secondary));
+        --editor-document-caret-color: rgb(var(--quip-user-text-secondary));
+        --editor-document-tint-color: rgb(var(--quipBlue));
+        --background-slack: 299, 56%, 19%;
+        --foreground-slack: 298, 18%, 42%;
+        --background-slack-active: 297, 29%, 31%;
+        --background-slack-secondary: 296, 24%, 37%;
+        --foreground-slack-secondary: 300, 9%, 77%;
+        --background-slack-button-active: 206, 80%, 35%;
+        --background: 0 0% 100%;
+        --foreground: 222.2 84% 4.9%;
+        --link: 210, 85%, 30%;
+        --card: 0 0% 100%;
+        --card-foreground: 222.2 84% 4.9%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 222.2 84% 4.9%;
+        --primary: 222.2 47.4% 11.2%;
+        --primary-foreground: 210 40% 98%;
+        --secondary: 210 40% 96.1%;
+        --secondary-foreground: 222.2 47.4% 11.2%;
+        --muted: 210 40% 96.1%;
+        --muted-foreground: 215.4 16.3% 46.9%;
+        --accent: 0, 0%, 96%;
+        --accent-foreground: 222.2 47.4% 11.2%;
+        --destructive: 341 76% 50%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 0, 0%, 87%;
+        --input: 214.3 31.8% 91.4%;
+        --ring: 222.2 84% 4.9%;
+        --chart-1: 12 76% 61%;
+        --chart-2: 173 58% 39%;
+        --chart-3: 197 37% 24%;
+        --chart-4: 43 74% 66%;
+        --chart-5: 27 87% 67%;
+        --radius: 0.5rem;
+    }
+    .dark {
+        --background-slack: 299, 56%, 19%;
+        --foreground-slack: 298, 18%, 42%;
+        --foreground-slack-secondary: 300, 9%, 77%;
+        --background: 222.2 84% 4.9%;
+        --foreground: 210 40% 98%;
+        --card: 222.2 84% 4.9%;
+        --card-foreground: 210 40% 98%;
+        --popover: 222.2 84% 4.9%;
+        --popover-foreground: 210 40% 98%;
+        --primary: 210 40% 98%;
+        --primary-foreground: 222.2 47.4% 11.2%;
+        --secondary: 217.2 32.6% 17.5%;
+        --secondary-foreground: 210 40% 98%;
+        --muted: 217.2 32.6% 17.5%;
+        --muted-foreground: 215 20.2% 65.1%;
+        --accent: 217.2 32.6% 17.5%;
+        --accent-foreground: 210 40% 98%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 217.2 32.6% 17.5%;
+        --input: 217.2 32.6% 17.5%;
+        --ring: 212.7 26.8% 83.9%;
+        --chart-1: 220 70% 50%;
+        --chart-2: 160 60% 45%;
+        --chart-3: 30 80% 55%;
+        --chart-4: 280 65% 60%;
+        --chart-5: 340 75% 55%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+.dotPattern {
+    background-image: radial-gradient(rgb(35, 40, 68) 1px, transparent 1px);
+    background-size: 25px 25px;
+}
+
+.use-automation-zoom-in {
+    animation: automation-zoom-in 0.5s;
+}
+
+@keyframes automation-zoom-in {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overflow: scroll;
+}
+
+.ql-toolbar {
+    border: none !important;
+    background-color: #f8f8f8 !important;
+}
+
+.ql-toolbar .ql-formats:not(:last-child) {
+    border-right: 1pz solid #dbdbdc !important;
+    padding-right: 12pxx !important;
+}
+
+.ql-rich-text-table .ql-container {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.ql-rich-text-table .ql-editor {
+    padding: 14px 16px !important;
+}
+
+.ql-container {
+    font-family: "Lato", sans-serif !important;
+    border: none !important;
+    height: unset !important;
+}
+
+.ql-editor {
+    padding: 8px 12px !important;
+    color: #1d1d1d !important;
+    font-weight: 400;
+    font-family: "Lato", sans-serif !important;
+    font-size: 14px;
+    max-height: calc(60vh - 8px) !important;
+    word-break: break-word !important;
+    line-height: 1.46668 !important;
+    user-select: text !important;
+    tab-size: 8 !important;
+}
+
+.ql-editor a {
+    color: #1264a3 !important;
+}
+
+h1 {
+    font-size: 22px !important;
+    line-height: 30px !important;
+    font-weight: 900;
+}
+
+h2 {
+    font-size: 18px !important;
+    line-height: 27px !important;
+    font-weight: 900;
+}
+
+h3 {
+    font-size: 15px !important;
+    line-height: 22px !important;
+    font-weight: 900;
+}
+
+h1 img {
+    width: 30px !important;
+    height: 30px !important;
+}
+
+h2 img {
+    width: 27px !important;
+    height: 27px !important;
+}
+
+.ql-editor img {
+    width: 22px;
+    height: 22px;
+    text-align: left;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    cursor: text;
+    vertical-align: top;
+    display: inline;
+}
+
+.ql-rich-text > .ql-container > .ql-editor {
+    padding: 0 !important;
+    outline: none;
+}
+
+.ql-rich-text img {
+    width: 32px !important;
+    height: 32px !important;
+}
+
+.ql-rich-text > .ql-container > .ql-editor p {
+    font-size: 28px !important;
+    line-height: 34px !important;
+    font-weight: 900;
+}
+
+.ql-rich-text > .ql-container > .ql-blank::before {
+    font-size: 28px !important;
+    line-height: 34px !important;
+    font-weight: 900 !important;
+    left: 0px !important;
+}
+
+.ql-rich-text-section-title > .ql-container > .ql-editor {
+    padding: 0 !important;
+    outline: none;
+}
+
+.ql-rich-text-section-title > .ql-container > .ql-blank::before {
+    left: 0px !important;
+}
+
+.ql-editor p {
+    line-height: 22px !important;
+}
+
+.ql-editor a:hover {
+    text-decoration: underline !important;
+}
+
+.ql-renderer {
+    padding: 0 !important;
+}
+
+.ql-editor::before {
+    left: 12px !important;
+    font-family: "Lato", sans-serif !important;
+    color: #8d8d8d !important;
+    font-style: normal !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    @apply truncate;
+}
+
+.table-element {
+    table-layout: fixed;
+    width: fit-content;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.table-row {
+    text-align: left;
+    margin: 0;
+    font-weight: 400;
+    height: 100%;
+}
+
+.table-cell {
+    border: 1px solid rgba(28, 29, 29, 0.3);
+    outline: none;
+    position: relative;
+    min-height: 46px;
+    z-index: 1;
+    vertical-align: top;
+    margin: 0;
+    padding: 0;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.document-content {
+    padding: 0px;
+    word-wrap: break-word;
+    color: rgb(var(--quip-user-text-secondary));
+    outline: none;
+    text-align: left;
+}
+
+.document-body {
+    height: 46px;
+}
+
+.section {
+    position: relative;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    height: 46px;
+    min-height: 22px;
+    height: fit-content;
+}
+
+.section::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    background-color: transparent;
+    opacity: 0;
+    top: 0;
+    right: -4px;
+    bottom: 0;
+    left: -4px;
+    border-radius: 4px;
+    transition: opacity 0.2s linear, background-color 0.2s linear, top 0.2s step-end, bottom 0.2s step-end, left 0.2s step-end, right 0.2s step-end;
+}
+
+.content {
+    line-height: 22px;
+    font-size: 15px;
+    color: var(--editor-document-text-color);
+    caret-color: var(--editor-document-caret-color);
+    white-space: pre-wrap;
+    width: 100%;
+    height: 100%;
+    min-height: 22px;
+}
+
+.table-element:hover .matches-hover {
+    opacity: 1;
+}
+
+.table-part-add-button-wrapper-bottom {
+    position: absolute;
+    width: 100%;
+    height: 22px;
+    bottom: -11.5px;
+    right: 0px;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.table-part-add-button-wrapper-right {
+    position: absolute;
+    width: 22px;
+    height: 100%;
+    bottom: 0px;
+    right: -11.5px;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.table-part-add-button {
+    cursor: pointer;
+    position: absolute;
+    z-index: 200;
+    background-color: transparent;
+    width: 22px;
+    height: 22px;
+    padding: 7px;
+}
+
+.icon-container:hover::before {
+    content: var(--tooltip-content, "Default tooltip");
+    position: absolute;
+    user-select: none;
+    top: var(--tooltip-position-top);
+    left: var(--tooltip-position-left);
+    transform: var(--tooltip-transform);
+    background-color: #000;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.icon-container:hover::after {
+    content: "";
+    position: absolute;
+    user-select: none;
+    top: var(--tooltip-arrow-position-top);
+    left: var(--tooltip-arrow-position-left);
+    transform: var(--tooltip-arrow-transform);
+    width: 9px;
+    height: 9px;
+    background-color: #000;
+    transform: rotate(45deg);
+}
+
+.table-part-add-button:hover {
+    width: 36px;
+    height: 36px;
+}
+
+.table-part-add-button:hover .icon {
+    display: block;
+}
+
+.icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1d9bd1;
+    outline: solid rgba(var(--sk_primary_background, 255, 255, 255), 1) 2px;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.icon {
+    display: none;
+    width: 12px;
+    height: 12px;
+}
+
+.table-cell-border-top {
+    position: absolute;
+    width: calc(100% + 2px);
+    height: 2px;
+    left: -1px;
+    top: -1px;
+}
+
+.table-cell-border-right {
+    position: absolute;
+    width: 10px;
+    height: calc(100% + 2px);
+    top: -1px;
+    right: -5px;
+    padding-left: 4px;
+    padding-right: 4px;
+    z-index: 199;
+    cursor: col-resize;
+}
+
+.table-cell-border-bottom {
+    position: absolute;
+    width: calc(100% + 2px);
+    height: 2px;
+    left: -1px;
+    bottom: -1px;
+}
+
+.table-cell-border-left {
+    position: absolute;
+    top: -1px;
+    width: 2px;
+    height: calc(100% + 2px);
+    left: -1px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.visible-highlight {
+    width: 100%;
+    height: 100%;
+    background-color: #1d9bd1;
+}
+
+.table-row:hover .table-part-drag-handle-wrapper-row {
+    opacity: 0.2;
+}
+
+.table-cell:hover .table-part-drag-handle-wrapper-column {
+    opacity: 0.2;
+}
+
+.table-part-drag-handle-wrapper-row {
+    cursor: grab;
+    opacity: 0;
+    transition: opacity 0.1s ease 50ms;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    width: 16px;
+    height: 100%;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    top: 0px;
+    left: -16px;
+}
+
+.table-part-drag-handle-wrapper-row:hover {
+    opacity: 0.4 !important;
+}
+
+.table-part-drag-handle-wrapper-column {
+    cursor: grab;
+    opacity: 0;
+    transition: opacity 0.1s ease 50ms;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    height: 16px;
+    width: 100%;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    top: -16px;
+    left: 0px;
+}
+
+.table-part-drag-handle-wrapper-column:hover {
+    opacity: 0.4 !important;
+}
+
+.table-part-drag-handle-row {
+    border-radius: 4px;
+    width: 4px;
+    height: 28px;
+    background-color: rgb(92, 100, 112);
+}
+
+.table-part-drag-handle-column {
+    border-radius: 4px;
+    width: 28px;
+    height: 4px;
+    background-color: rgb(92, 100, 112);
+}
+
+.dragging .table-part-drag-handle-wrapper-row {
+    opacity: 0 !important;
+}
+
+.dragging .table-part-drag-handle-wrapper-column {
+    opacity: 0 !important;
+}
+
+.dragging .icon-container {
+    opacity: 0 !important;
+}
+
+.dragging-over .drop-location {
+    opacity: 1 !important;
+}
+
+.dragging-over .table-part-drag-handle-wrapper-row {
+    opacity: 0 !important;
+}
+
+.dragging-over-column .table-part-drag-handle-wrapper-column {
+    opacity: 0 !important;
+}
+
+.drop-location {
+    position: absolute;
+    left: -1px;
+    width: calc(100% + 2px);
+    height: 4px;
+    bottom: -1px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.dragging-over-column .table-cell-border-highlight {
+    opacity: 1 !important;
+}
+
+.table-cell-border-highlight {
+    position: absolute;
+    top: -1px;
+    width: 12px;
+    height: calc(100% + 2px);
+    right: -5px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.table-cell-clone {
+    border: 0.5px solid rgba(28, 29, 29, 0.3);
+}
+
+.table-cell-clone .table-cell-border-highlight {
+    opacity: 0 !important;
+}
+
+.table-row-clone .table-cell {
+    border: 0.5px solid rgba(28, 29, 29, 0.3);
+    opacity: 0.5;
+}
+
+.table-row-clone .drop-location {
+    opacity: 0 !important;
+}
+
+.section-drop-location {
+    position: absolute;
+    left: 0;
+    width: calc(100% - 2px);
+    opacity: 0;
+    height: 4px;
+    bottom: -10px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.dragging .drag-section {
+    opacity: 0 !important;
+}
+
+.dragging-section-over .section-drop-location {
+    opacity: 1 !important;
+}
